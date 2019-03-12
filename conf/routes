@@ -1,0 +1,8 @@
+#For connection test
+GET  /api/ping                 controllers.HealthCheckController.healthCheck
+#Requirement 1
+POST /api/v1/search/title-info controllers.TitleInfoController.getTitleInfo
+#Requirement 2
+GET  /api/v1/search/ratings    controllers.RatingsController.getRatingsRank(genre: String, offset: Int, limit: Int)
+#Requirement 3
+POST /api/v1/search/degree     controllers.DegreeCalculateController.getDegreeWithKevinBacon

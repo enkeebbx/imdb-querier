@@ -11,22 +11,27 @@ class RatingsRankServiceTest extends LunaTestSpecification {
       val genreTitleRepository = instance[GenreTitlesRepository]
       val titleRatingsRepository = instance[TitlesRatingsRepository]
       val titleBasicsRepository = instance[TitleBasicsRepository]
+
       val genreId = 1
       val genre= "horror"
       val title = "horror movie"
-      val size = 100
-      val tconst = 1
+      val offset = 0
+      val limit = 10
 
-      val list = generateGenreTitles(size, genreId)
       // insert data
-      await(genresRepository.insert(generateGenres(size, genre)))
-      await(genreTitleRepository.insert(generateGenreTitles(size, genreId)))
-      await(titleRatingsRepository.insert(generateTitleRatings(size)))
-      await(titleBasicsRepository.insert(generateTitleBasics(size, title)))
+      await(genresRepository.insert(Seq(generateGenres(1, genre))))
+      await(genreTitleRepository.insert(generateGenreTitles(1,1, 1)))
+      await(genreTitleRepository.insert(generateGenreTitles(1,1, 2)))
 
-      val output = await(service.findRatingResultsDescByGenreId(genreId))
+      await(titleRatingsRepository.insert(generateTitleRatings(1, 1, 6.6)))
+      await(titleBasicsRepository.insert(generateTitleBasics(1, "21 Jump Street", 1)))
 
-      println(output)
+      await(titleRatingsRepository.insert(generateTitleRatings(1, 2, 7.2)))
+      await(titleBasicsRepository.insert(generateTitleBasics(1, "Harold and Kumar", 2)))
+
+      val output = await(service.findRatingResultsDescByGenreId(genreId, offset, limit))
+
+      assert(output.map(_.averageRating) == Seq(Some(7.2), Some(6.6)))
     }
   }
 }

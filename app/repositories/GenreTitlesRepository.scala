@@ -1,7 +1,7 @@
 package repositories
 
 import com.google.inject.{Inject, Singleton}
-import models.GenreTitles
+import models.entity.GenreTitles
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.GenreTitlesComponent
 import slick.jdbc.JdbcProfile

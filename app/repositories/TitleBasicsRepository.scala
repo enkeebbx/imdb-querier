@@ -1,8 +1,8 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import models.TitleBasics
-import models.exceptions.NoMatchingTitleBasicsWithTitleException
+import models.entity.TitleBasics
+import models.exception.NoMatchingTitleBasicsWithTitleException
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.TitleBasicsComponent
 import slick.jdbc.JdbcProfile

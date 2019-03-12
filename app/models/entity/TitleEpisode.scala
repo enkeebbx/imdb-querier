@@ -1,4 +1,4 @@
-package models
+package models.entity
 
 case class TitleEpisode (
   id : Option[Long] = None,
@@ -6,4 +6,3 @@ case class TitleEpisode (
   region : String,
   language : String
 )
-

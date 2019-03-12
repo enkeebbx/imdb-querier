@@ -1,7 +1,7 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import models.TitleAkas
+import models.entity.TitleAkas
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.TitleAkasComponent
 import slick.jdbc.JdbcProfile

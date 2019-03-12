@@ -1,8 +1,8 @@
 package repositories
 
 import com.google.inject.{Inject, Singleton}
-import models.TitleActors
-import models.exceptions.{LunaException, NoMatchingNconstsWithTconstException}
+import models.entity.TitleActors
+import models.exception.{LunaException, NoMatchingNconstsWithTconstException}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.TitleActorsComponent
 import slick.jdbc.JdbcProfile

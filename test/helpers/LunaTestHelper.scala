@@ -1,9 +1,8 @@
 package helpers
 
-import models._
+import models.entity._
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.Json
 import play.api.mvc.{Action, Results}
 import play.api.routing.Router
 import play.api.routing.sird._
@@ -26,30 +25,30 @@ abstract class LunaTestHelper extends PlaySpec with Results with DefaultAwaitTim
     }
   }
 
-  def generateGenres(size : Int, genre: String): Seq[Genres] = {
-    Range(0, size).map { i => Genres (i+1, genre) }
+  def generateGenres(genreId: Int, genre: String): Genres = {
+    Genres (genreId, genre)
   }
 
-  def generateGenreTitles(size: Int, genreId : Int) : Seq[GenreTitles] = {
-    Range(0, size).map { i => GenreTitles (i+1, genreId, i+1) }
+  def generateGenreTitles(size: Int, genreId : Int, tconst: Int) : Seq[GenreTitles] = {
+    Range(0, size).map { i => GenreTitles (i+1, genreId, tconst) }
   }
 
-  def generateTitleRatings(size: Int) : Seq[TitleRatings] = {
-    Range(0, size).map { i => TitleRatings (Some(i+1), Some(i+1), Some((i+1).toDouble)) }
+  def generateTitleRatings(size: Int, tconst: Int, ratings: Double) : Seq[TitleRatings] = {
+    Range(0, size).map { i => TitleRatings (Some(i+1), Some(tconst), Some(ratings)) }
   }
 
-  def generateTitleCrew(size: Int) : Seq[TitleCrew] = {
-    Range(0, size).map { i => TitleCrew((i+1).toString, (i+1).toString, Some(i+1)) }
+  def generateTitleCrew(size: Int, directors: String, writers: String, tconst: Int) : Seq[TitleCrew] = {
+    Range(0, size).map { i => TitleCrew(directors, writers, Some(tconst)) }
   }
 
-  def generateTitleActors(size: Int) : Seq[TitleActors] = {
-    Range(0, size).map { i => TitleActors(i+1, i+1, (i+1).toString) }
+  def generateTitleActors(size: Int, tconst: Int, nconst: String) : Seq[TitleActors] = {
+    Range(0, size).map { i => TitleActors(i+1, tconst, nconst) }
   }
 
-  def generateNameBasics(size: Int, name : String, nconst: Int) : Seq[NameBasics] = {
+  def generateNameBasics(size: Int, name : String, profession: String, nconst: Int) : Seq[NameBasics] = {
     Range(0, size).map { i =>
       NameBasics (
-        "actor",
+        profession,
         Some(1992),
         "title",
         Some("sound"),
@@ -62,7 +61,7 @@ abstract class LunaTestHelper extends PlaySpec with Results with DefaultAwaitTim
     }
   }
 
-  def generateTitleBasics(size: Int, title: String) : Seq[TitleBasics] = {
+  def generateTitleBasics(size: Int, title: String, tconst: Int) : Seq[TitleBasics] = {
     Range(0, size).map { i =>
       TitleBasics (
         "genres",
@@ -74,7 +73,7 @@ abstract class LunaTestHelper extends PlaySpec with Results with DefaultAwaitTim
         title,
         Some(true),
         Some(1993),
-        Some(i)
+        Some(tconst)
       )
     }
   }

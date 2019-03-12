@@ -1,4 +1,4 @@
-package models.exceptions
+package models.exception
 
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -31,7 +31,7 @@ case class NoMatchingTitleCrewWithTconstException(errorMessage: String  = "Canno
 
 case class KevinBaconNotFoundException(errorMessage: String  = "Cannot find Kevin Bacon") extends LunaException(errorMessage)
 
-case class DegreeMoreThanSixException(errorMessage: String  = "Kevin Bacon, you are wrong!! You are not within my six degree!") extends LunaException(errorMessage)
+case class DegreeMoreThanSixException(errorMessage: String  = "Kevin Bacon, you are wrong!! You are not within my six degree radius!") extends LunaException(errorMessage)
 
 case class TitleBasicsTconstNotFoundException(errorMessage: String  = "Cannot find tconst in title basics") extends LunaException(errorMessage)
 

@@ -1,8 +1,8 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import models.NameBasics
-import models.exceptions.{LunaException, NameBasicsNotFoundException, NoMatchingNconstWithNameException}
+import models.entity.NameBasics
+import models.exception.{LunaException, NameBasicsNotFoundException, NoMatchingNconstWithNameException}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.{NameBasicsComponent, TitleCrewComponent}
 import slick.jdbc.JdbcProfile

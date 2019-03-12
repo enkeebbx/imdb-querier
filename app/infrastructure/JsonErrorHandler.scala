@@ -1,7 +1,7 @@
 package infrastructure
 
 import javax.inject._
-import models.exceptions.LunaException
+import models.exception.LunaException
 import org.apache.http.HttpStatus._
 import play.api._
 import play.api.http.ContentTypes._

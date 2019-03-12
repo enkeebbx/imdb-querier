@@ -1,4 +1,4 @@
-package models
+package models.entity
 
 case class TitlePrincipals (
   category: String,
@@ -9,4 +9,3 @@ case class TitlePrincipals (
   job : String,
   nconst : String
 )
-

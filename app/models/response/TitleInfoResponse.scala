@@ -1,6 +1,8 @@
-package models
+package models.response
 
-case class TitleInfo (
+import models.{Cast, Crew}
+
+case class TitleInfoResponse (
   title : String,
   genres : String,
   startYear : Option[Int],

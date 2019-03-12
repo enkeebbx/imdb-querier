@@ -1,4 +1,4 @@
-package models
+package models.entity
 
 case class TitleBasics (
   genres: String,
@@ -12,4 +12,3 @@ case class TitleBasics (
   endYear : Option[Int],
   tconst : Option[Int]
 )
-

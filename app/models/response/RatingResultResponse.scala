@@ -1,4 +1,4 @@
-package models
+package models.response
 
 case class RatingResultResponse (
   title : String,

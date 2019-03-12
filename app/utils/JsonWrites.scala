@@ -1,6 +1,8 @@
 package utils
 
-import models.{Crew, RatingResultResponse, TitleInfo}
+import models.request.TitleInfoRequest
+import models.response.{RatingResultResponse, TitleInfoResponse}
+import models.{Cast, Crew, TitleInfo}
 import play.api.libs.json._
 
 object JsonWrites extends DefaultWrites {
@@ -21,15 +23,38 @@ object JsonWrites extends DefaultWrites {
   implicit val crewWrites : Writes[Crew] = new Writes[Crew] {
     def writes(response: Crew): JsValue = {
       Json.obj(
-        "name" -> response.name
+        "name" -> response.name,
+        "profession" -> response.primaryProfession,
+        "birth_year" -> response.birthYear,
+        "death_year" -> response.deathYear
       )
     }
   }
 
-  implicit val titleInfoWrites : Writes[TitleInfo] = new Writes[TitleInfo] {
-    def writes(response: TitleInfo): JsValue = {
+  implicit val castWrites : Writes[Cast] = new Writes[Cast] {
+    def writes(response: Cast): JsValue = {
       Json.obj(
-        "title" -> response.title
+        "name" -> response.name,
+        "profession" -> response.primaryProfession,
+        "birth_year" -> response.birthYear,
+        "death_year" -> response.deathYear
+      )
+    }
+  }
+
+  implicit val titleInfoWrites : Writes[TitleInfoResponse] = new Writes[TitleInfoResponse] {
+    def writes(response: TitleInfoResponse): JsValue = {
+      Json.obj(
+        "title" -> response.title,
+        "genres" -> response.genres,
+        "start_year" -> response.startYear,
+        "runtime_minutes" -> response.runtimeMinutes,
+        "is_adult" -> response.isAdult,
+        "end_year" -> response.endYear,
+        "tconst" -> response.tconst,
+        "directors" -> response.directors,
+        "writers" -> response.writers,
+        "actor_names" -> response.actorNames
       )
     }
   }

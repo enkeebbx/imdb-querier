@@ -1,8 +1,8 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import models.TitleCrew
-import models.exceptions.NoMatchingTitleCrewWithTconstException
+import models.entity.TitleCrew
+import models.exception.NoMatchingTitleCrewWithTconstException
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.TitleCrewComponent
 import slick.jdbc.JdbcProfile

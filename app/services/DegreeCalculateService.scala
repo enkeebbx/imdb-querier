@@ -2,7 +2,7 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import io.github.hamsters.FutureEither
-import models.exceptions.{DegreeMoreThanSixException, KevinBaconNotFoundException, LunaException}
+import models.exception.{DegreeMoreThanSixException, KevinBaconNotFoundException, LunaException}
 import repositories.{NameBasicsRepository, TitlePrincipalsRepository}
 
 import scala.collection.immutable.Queue
@@ -76,13 +76,12 @@ class DegreeCalculateService @Inject()(
 
       if (degree > 6)  {
         // Kevin Bacon, you lied!!
+        println(degree)
         Future.successful(Left(DegreeMoreThanSixException()))
       }
       else {
-        if(nconst == kevinBaconNconst) {
-          // Kevin Bacon, I got you!
-          Future.successful(Right(dequeue._1.degree))
-        }
+        // Kevin Bacon, I got you!
+        if(nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
         else {
           // Kevin Bacon, where art thou? I am coming for you!!
           val withCurrentNconstVisitedTrue: Map[String, Boolean] = nConstVisited ++ Map(nconst -> true)

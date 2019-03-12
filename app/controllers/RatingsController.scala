@@ -2,7 +2,7 @@ package controllers
 
 import akka.stream.Materializer
 import javax.inject.{Inject, Singleton}
-import models.RatingResultResponse
+import models.response.RatingResultResponse
 import play.api.libs.json.Json
 import play.api.mvc._
 import services.RatingsRankService
@@ -29,8 +29,8 @@ class RatingsController @Inject()(
     * @param genre
     * @return
     */
-  def getRatingsRank(genre: String): Action[AnyContent] = Action.async {
-    ratingsQueryService.findTopRatedMoviesByGenre(genre).map {
+  def getRatingsRank(genre: String, offset: Int, limit: Int): Action[AnyContent] = Action.async {
+    ratingsQueryService.findTopRatedMoviesByGenre(genre, offset, limit).map {
       case Right(result) =>
         val response = result.map { elem =>
           RatingResultResponse (

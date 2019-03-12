@@ -1,4 +1,4 @@
-package models
+package models.entity
 
 case class TitleAkas (
   ordering : Option[Int] = None,
@@ -11,4 +11,3 @@ case class TitleAkas (
   region : Option[String] = None,
   language : Option[String] = None
 )
-

@@ -2,8 +2,9 @@ package services.query
 
 import com.google.inject.{Inject, Singleton}
 import io.github.hamsters.FutureEither
-import models.NameBasics
-import models.exceptions.LunaException
+import models.{DirectorWriterNameBasics, DirectorWriterNconst}
+import models.entity.NameBasics
+import models.exception.LunaException
 import repositories.{NameBasicsRepository, TitleActorsRepository, TitleCrewRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,16 +15,6 @@ class CrewQueryService @Inject()(
   nameBasicsRepository: NameBasicsRepository,
   titleCrewRepository: TitleCrewRepository
 )(implicit ec: ExecutionContext) {
-  case class DirectorsWritersNconst (
-    directors : Seq[Int],
-    writers : Seq[Int]
-  )
-
-  case class DirectorWriterNameBasics (
-    director : Seq[NameBasics],
-    writer : Seq[NameBasics]
-  )
-
   /**
     * Find nconst of directors and writers associated with the given tconst
     *
@@ -31,12 +22,12 @@ class CrewQueryService @Inject()(
     * @return
     */
 
-  private[query] def findDirectorsWritersNconstByTconst(tconst: Int): Future[Either[LunaException, DirectorsWritersNconst]] = {
+  private[query] def findDirectorsWritersNconstByTconst(tconst: Int): Future[Either[LunaException, DirectorWriterNconst]] = {
     titleCrewRepository.findTitleCrewByTconst(tconst).map {
       case Right(titleCrew) =>
-        val directors = titleCrew.directors.split(',').map(_.toInt)
-        val writers = titleCrew.directors.split(',').map(_.toInt)
-        Right(DirectorsWritersNconst(directors, writers))
+        val directors = titleCrew.directors.split(',').map(_.filterNot(_.isWhitespace).toInt)
+        val writers = titleCrew.writers.split(',').map(_.filterNot(_.isWhitespace).toInt)
+        Right(DirectorWriterNconst(directors, writers))
       case Left(e) =>
         Left(e)
     }

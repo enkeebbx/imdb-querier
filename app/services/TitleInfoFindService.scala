@@ -2,18 +2,15 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import io.github.hamsters.FutureEither
-import models.exceptions.{LunaException, TitleBasicsTconstNotFoundException}
-import models.{Crew, TitleInfo}
+import models.TitleInfo
+import models.exception.{LunaException, TitleBasicsTconstNotFoundException}
 import repositories.TitleBasicsRepository
 import services.query.CrewQueryService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TitleInfoFindService @Inject()(
-  titleBasicsRepository : TitleBasicsRepository,
-  crewQueryService : CrewQueryService
-)(implicit ec: ExecutionContext) {
+class TitleInfoFindService @Inject()(titleBasicsRepository : TitleBasicsRepository, crewQueryService : CrewQueryService)(implicit ec: ExecutionContext) {
   /**
     * Requirement #1
     * @param title
@@ -37,9 +34,9 @@ class TitleInfoFindService @Inject()(
               titleBasics.isAdult,
               titleBasics.endYear,
               tconst.get,
-              directorWriters.director.map(nameBasics => Crew(nameBasics.primaryName)),
-              directorWriters.writer.map(nameBasics => Crew(nameBasics.primaryName)),
-              actorNames.map(_.primaryName)
+              directorWriters.director.map(_.toCrew()),
+              directorWriters.writer.map(_.toCrew()),
+              actorNames.map(_.toCast())
             )
           }).future
         }

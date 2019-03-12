@@ -1,7 +1,7 @@
 package repositories
 
 import com.google.inject.{Inject, Singleton}
-import models.{GenreTitles, TitleBasics, TitleRatings}
+import models.entity.{GenreTitles, TitleBasics, TitleRatings}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.components.{GenreTitlesComponent, TitleBasicsComponent, TitleRatingsComponent}
 import slick.jdbc.JdbcProfile
@@ -20,13 +20,15 @@ class TitlesRatingsRepository @Inject()(protected val dbConfigProvider: Database
     db.run(action).map { _.get }
   }
 
-  def findAllGenreAndTitleByGenreIdSortByRatings(genreId: Int): Future[Seq[((GenreTitles, TitleRatings), TitleBasics)]] = {
+  def findAllGenreAndTitleByGenreIdSortByRatings(genreId: Int, offset: Int, limit: Int): Future[Seq[((GenreTitles, TitleRatings), TitleBasics)]] = {
     val action = genreTitlesTable
       .join(titleRatings)
       .on((g, t) => g.tconst === t.tconst && g.genreId === genreId)
       .join(titleBasics)
       .on(_._1.tconst === _.tconst)
       .sortBy(_._1._2.averageRatings.desc)
+      .drop(offset)
+      .take(limit)
       .result
 
     db.run(action.asTry) map {

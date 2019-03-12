@@ -1,6 +1,6 @@
 package repositories.components
 
-import models.GenreTitles
+import models.entity.GenreTitles
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.lifted.ProvenShape

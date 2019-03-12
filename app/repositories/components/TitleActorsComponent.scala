@@ -1,6 +1,6 @@
 package repositories.components
 
-import models.TitleActors
+import models.entity.TitleActors
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.lifted.ProvenShape
