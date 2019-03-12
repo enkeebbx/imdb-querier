@@ -3,6 +3,7 @@ package controllers
 import akka.stream.Materializer
 import javax.inject.{Inject, Singleton}
 import models.request.DegreeCalculateRequest
+import models.response.DegreeCalculateResponse
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import services.DegreeCalculateService
@@ -18,8 +19,11 @@ class DegreeCalculateController @Inject()(degreeCalculateService: DegreeCalculat
     val body: JsValue = request.body
     val degreeCalculateRequest: DegreeCalculateRequest = withJsonValidation(body)(JsonReads.degreeCalculateRequestReads)
     degreeCalculateService.getDegreeWithKevinBacon(degreeCalculateRequest.actor).map {
-      case Right(result) => Ok(Json.toJson(result))
-      case Left(e) => throw e
+      case Right(result) =>
+        val response = DegreeCalculateResponse(result)
+        Ok(Json.toJson(response))
+      case Left(e) =>
+        throw e
     }
   }
 }

@@ -1,8 +1,7 @@
 package utils
 
-import models.request.TitleInfoRequest
-import models.response.{RatingResultResponse, TitleInfoResponse}
-import models.{Cast, Crew, TitleInfo}
+import models.response.{DegreeCalculateResponse, RatingResultResponse, TitleInfoResponse}
+import models.{Cast, Crew}
 import play.api.libs.json._
 
 object JsonWrites extends DefaultWrites {
@@ -38,6 +37,14 @@ object JsonWrites extends DefaultWrites {
         "profession" -> response.primaryProfession,
         "birth_year" -> response.birthYear,
         "death_year" -> response.deathYear
+      )
+    }
+  }
+
+  implicit val degreeCalculateResponseWrites : Writes[DegreeCalculateResponse] = new Writes[DegreeCalculateResponse] {
+    def writes(response: DegreeCalculateResponse): JsValue = {
+      Json.obj(
+        "degree" -> response.degree
       )
     }
   }
