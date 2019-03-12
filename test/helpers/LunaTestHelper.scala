@@ -1,5 +1,6 @@
 package helpers
 
+import models.TitleInfo
 import models.entity._
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
@@ -8,6 +9,7 @@ import play.api.routing.Router
 import play.api.routing.sird._
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import play.api.{Application, Logger}
+import utils.NconstUtil
 
 import scala.reflect.ClassTag
 
@@ -78,6 +80,23 @@ abstract class LunaTestHelper extends PlaySpec with Results with DefaultAwaitTim
     }
   }
 
+  def generateTitleInfo(size: Int, title: String, tconst: Int) : Seq[TitleInfo] = {
+    Range(0, size).map { i =>
+      TitleInfo (
+        title,
+        "Comedy",
+        Some(1992),
+        Some(10),
+        Some(true),
+        Some(1993),
+        tconst,
+        Seq(),
+        Seq(),
+        Seq()
+      )
+    }
+  }
+
   def generateTitlePrincipals(size: Int, tconst: Int, nconst: String) : Seq[TitlePrincipals] = {
     Range(0, size).map { i =>
       TitlePrincipals (
@@ -87,7 +106,7 @@ abstract class LunaTestHelper extends PlaySpec with Results with DefaultAwaitTim
         Some(tconst),
         "",
         "",
-        nconst
+        NconstUtil.padNconst(nconst)
       )
     }
   }

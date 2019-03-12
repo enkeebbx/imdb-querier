@@ -46,7 +46,9 @@ CREATE TABLE `genres` (
 CREATE TABLE `genre_titles` (
   `id` int(11),
   `genre_id` int(11),
-  `tconst` int(11)
+  `tconst` int(11),
+  KEY `ix_genre_id_tconst` (`genre_id`),
+  KEY `ix_genre_titles_tconst` (`tconst`)
 );
 
 CREATE TABLE `title_crew` (
@@ -72,8 +74,9 @@ CREATE TABLE `title_principals` (
   `tconst` int(11) DEFAULT NULL,
   `characters` text,
   `job` text,
-  `nconst` text,
-  KEY `ix_title_principals_tconst` (`tconst`)
+  `nconst` varchar(10),
+  KEY `ix_title_principals_tconst` (`tconst`),
+  KEY `ix_title_principals_nconst` (`nconst`)
 );
 
 CREATE TABLE `title_actors` (
@@ -117,3 +120,6 @@ DROP TABLE `title_crew`;
 DROP TABLE `title_episode`;
 DROP TABLE `title_principals`;
 DROP TABLE `title_ratings`;
+DROP TABLE `genres`;
+DROP TABLE `genre_titles`;
+DROP TABLE `title_actors`;

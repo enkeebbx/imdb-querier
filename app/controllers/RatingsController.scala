@@ -9,12 +9,10 @@ import services.RatingsRankService
 import utils.JsonWrites._
 import utils.{JsonReads, JsonValidate}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RatingsController @Inject()(
-  ratingsQueryService: RatingsRankService
-)(implicit val ec: ExecutionContext, val mat: Materializer) extends Controller {
+class RatingsController @Inject()(ratingsQueryService: RatingsRankService)(implicit val ec: ExecutionContext, val mat: Materializer) extends Controller {
   /**
     * Requirement #2 : Get ratings ranking of a genre
     *
@@ -32,23 +30,28 @@ class RatingsController @Inject()(
     */
   def getRatingsRank(offset: Int, limit: Int): Action[JsValue] = Action.async(parse.json) { request =>
     val body = request.body
-    val ratingsRequest = JsonValidate.withJsonValidation(body)(JsonReads.ratingsRequestReads)
-    ratingsQueryService.findTopRatedMoviesByGenre(ratingsRequest.genre, offset, limit).map {
-      case Right(result) =>
-        val response = result.map { elem =>
-          RatingResultResponse (
-            elem.title,
-            elem.startYear,
-            elem.endYear,
-            elem.runtime,
-            elem.isAdult,
-            elem.averageRating,
-            elem.numVotes
-          )
+    JsonValidate.withJsonValidation(body)(JsonReads.ratingsRequestReads) match {
+      case Right(ratingsRequest) =>
+        ratingsQueryService.findTopRatedMoviesByGenre(ratingsRequest.genre, offset, limit).map {
+          case Right(result) =>
+            val response = result.map { elem =>
+              RatingResultResponse (
+                elem.title,
+                elem.startYear,
+                elem.endYear,
+                elem.runtime,
+                elem.isAdult,
+                elem.averageRating,
+                elem.numVotes
+              )
+            }
+            Ok(Json.toJson(response))
+          case Left(e) =>
+            throw e
         }
-        Ok(Json.toJson(response))
       case Left(e) =>
-        throw e
+        Future.successful(BadRequest(e.getErrorMessage))
+
     }
   }
 }

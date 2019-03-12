@@ -4,6 +4,7 @@ import com.google.inject.{Inject, Singleton}
 import io.github.hamsters.FutureEither
 import models.exception.{DegreeMoreThanSixException, KevinBaconNotFoundException, LunaException}
 import repositories.{NameBasicsRepository, TitlePrincipalsRepository}
+import utils.NconstUtil
 
 import scala.collection.immutable.Queue
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,7 +21,7 @@ class DegreeCalculateService @Inject()(
     * @param genre
     */
 
-  def getDegreeWithKevinBacon(actorName : String): Future[Either[LunaException, Int]] = {
+  def getDegreeWithKevinBacon(actorName: String): Future[Either[LunaException, Int]] = {
     val nConstQueue: Queue[NconstDegree] = Queue[NconstDegree]()
 
     val output = (for {
@@ -28,8 +29,8 @@ class DegreeCalculateService @Inject()(
       kevinBaconNconst <- FutureEither(nameBasicsRepository.findNconstByPrimaryName("Kevin Bacon"))
     } yield {
       val seedDegree = 0
-      val seedNconstQueue: Queue[NconstDegree] = nConstQueue.enqueue(NconstDegree(seedActorNconst.toString, seedDegree))
-      getDegreeWithKevinBaconHelper(seedNconstQueue, kevinBaconNconst.toString, Map(), Map())
+      val seedNconstQueue: Queue[NconstDegree] = nConstQueue.enqueue(NconstDegree(NconstUtil.padNconst(seedActorNconst.toString), seedDegree))
+      getDegreeWithKevinBaconHelper(seedNconstQueue, NconstUtil.padNconst(kevinBaconNconst.toString), Map(), Map())
     }).future
 
     output.flatMap {
@@ -38,9 +39,9 @@ class DegreeCalculateService @Inject()(
     }
   }
 
-  case class NconstDegree (
-    nconst : String,
-    degree : Int
+  case class NconstDegree(
+    nconst: String,
+    degree: Int
   )
 
   /**
@@ -63,10 +64,10 @@ class DegreeCalculateService @Inject()(
     */
 
   private def getDegreeWithKevinBaconHelper(
-    nConstQueue      : Queue[NconstDegree],
-    kevinBaconNconst : String,
-    tConstVisited    : Map[Int, Boolean],
-    nConstVisited    : Map[String, Boolean]
+    nConstQueue: Queue[NconstDegree],
+    kevinBaconNconst: String,
+    tConstVisited: Map[Int, Boolean],
+    nConstVisited: Map[String, Boolean]
   ): Future[Either[LunaException, Int]] = {
     if (nConstQueue.isEmpty) Future.successful(Left(KevinBaconNotFoundException()))
     else {
@@ -74,14 +75,13 @@ class DegreeCalculateService @Inject()(
       val nconst: String = dequeue._1.nconst
       val degree = dequeue._1.degree
 
-      if (degree > 6)  {
+      if (degree > 6) {
         // Kevin Bacon, you lied!!
-        println(degree)
         Future.successful(Left(DegreeMoreThanSixException()))
       }
       else {
         // Kevin Bacon, I got you!
-        if(nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
+        if (nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
         else {
           // Kevin Bacon, where art thou? I am coming for you!!
           val withCurrentNconstVisitedTrue: Map[String, Boolean] = nConstVisited ++ Map(nconst -> true)
@@ -93,7 +93,7 @@ class DegreeCalculateService @Inject()(
             val unvisitedNconsts: Seq[String] = filterUnvisited(nconsts, withCurrentNconstVisitedTrue)
             val updateTconstVisited: Map[Int, Boolean] = tConstVisited ++ tconsts.map(tconst => (tconst, true)).toMap
             val updateNconstVisited: Map[String, Boolean] = withCurrentNconstVisitedTrue ++ unvisitedNconsts.map(nconst => (nconst, false)).toMap
-            val updateQueue: Queue[NconstDegree] = dequeue._2 ++ unvisitedNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree+1)))
+            val updateQueue: Queue[NconstDegree] = dequeue._2 ++ unvisitedNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree + 1)))
             getDegreeWithKevinBaconHelper(updateQueue, kevinBaconNconst, updateTconstVisited, updateNconstVisited)
           }).future
 
@@ -112,13 +112,14 @@ class DegreeCalculateService @Inject()(
 
   /**
     * Get unvisited element from elements.
+    *
     * @param elements
     * @param visitedMap
     * @tparam A
     * @return
     */
 
-  private def filterUnvisited[A](elements : Seq[A], visitedMap : Map[A, Boolean]): Seq[A] = {
+  private def filterUnvisited[A](elements: Seq[A], visitedMap: Map[A, Boolean]): Seq[A] = {
     // filters element that has visited false value.
     elements.filter(elem => !visitedMap.getOrElse(elem, false))
   }
