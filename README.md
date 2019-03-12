@@ -1,4 +1,4 @@
-#IMDb Querier
+##IMDb Querier
 
 ### Specs
 scala : 2.11.12
@@ -121,7 +121,7 @@ Request:
 POST /api/v1/search/degree
 
 {
-	"actor" : "Channing Tatum"
+    "actor" : "Channing Tatum"
 }
 ```
 
