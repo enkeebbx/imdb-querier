@@ -2,7 +2,8 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import io.github.hamsters.FutureEither
-import models.exception.{DegreeMoreThanSixException, KevinBaconNotFoundException, LunaException}
+import models.NconstDegree
+import models.exception.{KevinBaconNotFoundException, LunaException}
 import repositories.{NameBasicsRepository, TitlePrincipalsRepository}
 import utils.NconstUtil
 
@@ -39,11 +40,6 @@ class DegreeCalculateService @Inject()(
     }
   }
 
-  case class NconstDegree(
-    nconst: String,
-    degree: Int
-  )
-
   /**
     * Helper function:
     *
@@ -69,31 +65,35 @@ class DegreeCalculateService @Inject()(
     tConstVisited: Map[Int, Boolean],
     nConstVisited: Map[String, Boolean]
   ): Future[Either[LunaException, Int]] = {
-    if (nConstQueue.isEmpty) Future.successful(Left(KevinBaconNotFoundException()))
+    if (nConstQueue.isEmpty) {
+      Future.successful(Left(KevinBaconNotFoundException()))
+    }
     else {
       val dequeue = nConstQueue.dequeue
       val nconst: String = dequeue._1.nconst
       val degree = dequeue._1.degree
 
-      if (degree > 6) {
-        // Kevin Bacon, you lied!!
-        Future.successful(Left(DegreeMoreThanSixException()))
+      // if nconst exceeds 6 degrees or has been visited, do nothing
+      // else check if it's Kevin Bacon
+      if (!isValidNconst(nconst, nConstVisited, degree)){
+        getDegreeWithKevinBaconHelper(dequeue._2, kevinBaconNconst, tConstVisited, nConstVisited)
       }
       else {
-        // Kevin Bacon, I got you!
+         // Kevin Bacon, I got you!
         if (nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
         else {
-          // Kevin Bacon, where art thou? I am coming for you!!
+          // or not... Kevin Bacon, where art thou? I am coming for you!!
           val withCurrentNconstVisitedTrue: Map[String, Boolean] = nConstVisited ++ Map(nconst -> true)
 
           val output = (for {
             tconsts <- FutureEither(titlePrincipalsRepository.findTconstsByNconst(nconst))
             nconsts <- FutureEither(titlePrincipalsRepository.findNconstsByTconsts(filterUnvisited(tconsts, tConstVisited)))
           } yield {
-            val unvisitedNconsts: Seq[String] = filterUnvisited(nconsts, withCurrentNconstVisitedTrue)
-            val updateTconstVisited: Map[Int, Boolean] = tConstVisited ++ tconsts.map(tconst => (tconst, true)).toMap
+            val unvisitedNconsts: Seq[String]             = filterUnvisited(nconsts, withCurrentNconstVisitedTrue)
+            val updateTconstVisited: Map[Int, Boolean]    = tConstVisited ++ tconsts.map(tconst => (tconst, true)).toMap
             val updateNconstVisited: Map[String, Boolean] = withCurrentNconstVisitedTrue ++ unvisitedNconsts.map(nconst => (nconst, false)).toMap
-            val updateQueue: Queue[NconstDegree] = dequeue._2 ++ unvisitedNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree + 1)))
+            val updateQueue: Queue[NconstDegree]          = dequeue._2 ++ unvisitedNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree + 1)))
+
             getDegreeWithKevinBaconHelper(updateQueue, kevinBaconNconst, updateTconstVisited, updateNconstVisited)
           }).future
 
@@ -122,5 +122,9 @@ class DegreeCalculateService @Inject()(
   private def filterUnvisited[A](elements: Seq[A], visitedMap: Map[A, Boolean]): Seq[A] = {
     // filters element that has visited false value.
     elements.filter(elem => !visitedMap.getOrElse(elem, false))
+  }
+
+  private def isValidNconst(nconst: String, nconstVisited: Map[String, Boolean], degree: Int): Boolean = {
+    !nconstVisited.getOrElse(nconst, false) && degree <= 6
   }
 }

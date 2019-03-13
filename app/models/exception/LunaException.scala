@@ -57,11 +57,6 @@ case class KevinBaconNotFoundException(
   errorMessage: String  = "Cannot find Kevin Bacon"
 ) extends LunaException(statusCode, errorMessage)
 
-case class DegreeMoreThanSixException(
-  statusCode: Int = INTERNAL_SERVER_ERROR,
-  errorMessage: String  = "Kevin Bacon, you are wrong!! You are not within my six degree radius!"
-) extends LunaException(statusCode, errorMessage)
-
 case class TitleBasicsTconstNotFoundException(
   statusCode: Int = INTERNAL_SERVER_ERROR,
   errorMessage: String  = "Cannot find tconst in title basics"
