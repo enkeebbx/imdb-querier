@@ -125,30 +125,30 @@ class DegreeCalculateServiceTest extends LunaTestSpecification {
       assert(await(service.getDegreeWithKevinBacon(a8)) == Right(1))
     }
 
-//    "No association with Kevin Bacon at all" in new WithMemDb {
-//      val service = instance[DegreeCalculateService]
-//      val nameBasicsRepository = instance[NameBasicsRepository]
-//      val titlePrincipalsRepository = instance[TitlePrincipalsRepository]
-//
-//      // No Kevin Bacon, just me
-//      val me = "Kim Yoon Ung"
-//      val meNconst = 23
-//      val meTconst1 = "1"
-//      val meTconst2 = "2"
-//      val meTconst3 = "3"
-//
-//      val kevinBacon = "Kevin Bacon"
-//      val kevinBaconNconst = 24
-//
-//      // insert data
-//      await(nameBasicsRepository.insert(generateNameBasics(1, me, "actor", meNconst)))
-//      await(nameBasicsRepository.insert(generateNameBasics(1, kevinBacon, "actor", kevinBaconNconst)))
-//
-//      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst1.toInt, meNconst.toString)))
-//      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst2.toInt, meNconst.toString)))
-//      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst3.toInt, meNconst.toString)))
-//
-//      assert(await(service.getDegreeWithKevinBacon(me)) == Left(KevinBaconNotFoundException()))
-//    }
+    "No association with Kevin Bacon at all" in new WithMemDb {
+      val service = instance[DegreeCalculateService]
+      val nameBasicsRepository = instance[NameBasicsRepository]
+      val titlePrincipalsRepository = instance[TitlePrincipalsRepository]
+
+      // No Kevin Bacon, just me
+      val me = "Kim Yoon Ung"
+      val meNconst = 23
+      val meTconst1 = "1"
+      val meTconst2 = "2"
+      val meTconst3 = "3"
+
+      val kevinBacon = "Kevin Bacon"
+      val kevinBaconNconst = 24
+
+      // insert data
+      await(nameBasicsRepository.insert(generateNameBasics(1, me, "actor", meNconst)))
+      await(nameBasicsRepository.insert(generateNameBasics(1, kevinBacon, "actor", kevinBaconNconst)))
+
+      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst1.toInt, meNconst.toString)))
+      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst2.toInt, meNconst.toString)))
+      await(titlePrincipalsRepository.insert(generateTitlePrincipals(1, meTconst3.toInt, meNconst.toString)))
+
+      assert(await(service.getDegreeWithKevinBacon(me)) == Left(KevinBaconNotFoundException()))
+    }
   }
 }

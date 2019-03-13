@@ -73,58 +73,40 @@ class DegreeCalculateService @Inject()(
       val nconst: String = dequeue._1.nconst
       val degree = dequeue._1.degree
 
-      // if nconst exceeds 6 degrees or has been visited, do nothing
-      // else check if it's Kevin Bacon
-      if (!isValidNconst(nconst, nConstVisited, degree)){
-        getDegreeWithKevinBaconHelper(dequeue._2, kevinBaconNconst, tConstVisited, nConstVisited)
-      }
+      // Kevin Bacon, I got you!
+      if (nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
       else {
-         // Kevin Bacon, I got you!
-        if (nconst == kevinBaconNconst) Future.successful(Right(dequeue._1.degree))
-        else {
-          // or not... Kevin Bacon, where art thou? I am coming for you!!
-          val withCurrentNconstVisitedTrue: Map[String, Boolean] = nConstVisited ++ Map(nconst -> true)
+        // or not... Kevin Bacon, where art thou? I am coming for you!!
+        val output = (for {
+          tconsts <- FutureEither(titlePrincipalsRepository.findTconstsByNconst(nconst))
+          nconsts <- FutureEither(titlePrincipalsRepository.findNconstsByTconsts(tconsts.filter(isValidTconst(_, tConstVisited))))
+        } yield {
+          val currentNconstMarkedVisisted               = nConstVisited ++ Map(nconst -> true)
+          val isValidNconsts: Seq[String]               = nconsts.filter(nconst => isValidNconst(nconst, currentNconstMarkedVisisted, degree+1))
+          val updateTconstVisited: Map[Int, Boolean]    = tConstVisited ++ tconsts.map(tconst => (tconst, true)).toMap
+          val updateNconstVisited: Map[String, Boolean] = currentNconstMarkedVisisted ++ isValidNconsts.map(nconst => (nconst, false)).toMap
+          val updateQueue: Queue[NconstDegree]          = dequeue._2 ++ isValidNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree + 1)))
 
-          val output = (for {
-            tconsts <- FutureEither(titlePrincipalsRepository.findTconstsByNconst(nconst))
-            nconsts <- FutureEither(titlePrincipalsRepository.findNconstsByTconsts(filterUnvisited(tconsts, tConstVisited)))
-          } yield {
-            val unvisitedNconsts: Seq[String]             = filterUnvisited(nconsts, withCurrentNconstVisitedTrue)
-            val updateTconstVisited: Map[Int, Boolean]    = tConstVisited ++ tconsts.map(tconst => (tconst, true)).toMap
-            val updateNconstVisited: Map[String, Boolean] = withCurrentNconstVisitedTrue ++ unvisitedNconsts.map(nconst => (nconst, false)).toMap
-            val updateQueue: Queue[NconstDegree]          = dequeue._2 ++ unvisitedNconsts.foldLeft(Queue[NconstDegree]())((acc, i) => acc.enqueue(NconstDegree(i, degree + 1)))
+          getDegreeWithKevinBaconHelper(updateQueue, kevinBaconNconst, updateTconstVisited, updateNconstVisited)
+        }).future
 
-            getDegreeWithKevinBaconHelper(updateQueue, kevinBaconNconst, updateTconstVisited, updateNconstVisited)
-          }).future
-
-          output.flatMap {
-            case Left(e) => Future.successful(Left(e))
-            case Right(either) =>
-              either.map {
-                case Left(e) => Left(e)
-                case Right(value) => Right(value)
-              }
-          }
+        output.flatMap {
+          case Left(e) => Future.successful(Left(e))
+          case Right(either) =>
+            either.map {
+              case Left(e) => Left(e)
+              case Right(value) => Right(value)
+            }
         }
       }
     }
   }
 
-  /**
-    * Get unvisited element from elements.
-    *
-    * @param elements
-    * @param visitedMap
-    * @tparam A
-    * @return
-    */
-
-  private def filterUnvisited[A](elements: Seq[A], visitedMap: Map[A, Boolean]): Seq[A] = {
-    // filters element that has visited false value.
-    elements.filter(elem => !visitedMap.getOrElse(elem, false))
-  }
-
   private def isValidNconst(nconst: String, nconstVisited: Map[String, Boolean], degree: Int): Boolean = {
     !nconstVisited.getOrElse(nconst, false) && degree <= 6
+  }
+
+  private def isValidTconst(tconst: Int, tconstVisited: Map[Int, Boolean]): Boolean = {
+    !tconstVisited.getOrElse(tconst, false)
   }
 }

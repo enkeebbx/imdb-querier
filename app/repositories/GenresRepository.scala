@@ -23,9 +23,7 @@ class GenresRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
     val action = genres.filter(_.id === id).result.headOption
 
     db.run(action.asTry) map {
-      case Success(result) =>
-        println(result)
-        result
+      case Success(result) => result
       case _               => None
     }
   }
